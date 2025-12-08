@@ -10,71 +10,63 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pid.VelocityPIDController;
+
 @TeleOp(name = "PID test")
-public  class PIDtest extends LinearOpMode {
+public class PIDtest extends LinearOpMode {
 
     private DcMotorEx flywheelLeft;
     private DcMotorEx flywheelRight;
 
-    double pulsePerRevolution = 28;
+    private final double pulsePerRevolution = 28;
 
-    double targetRPM = 38;
+    private double targetRPM = 1700;
 
-    double integralsum = 0;
+    private double integralsum = 0;
 
-    double Kp = 0.05;
+    private final double Kp = 0.0001;
 
-    double Ki = 0;
+    private final double Ki = 0;
 
-    double Kd = 0;
+    private final double Kd = 0;
 
-    double maxVelocity = 2600;
-    double Kf = 1/maxVelocity;
-
-    ElapsedTime timer = new ElapsedTime();
-    private double lastError = 0;
+    private final double maxVelocity = 2600;
+    private final double Kf = 1 / maxVelocity;
 
     @Override
     public void runOpMode() {
-
         flywheelLeft = hardwareMap.get(DcMotorEx.class, "FlywheelLeft");
-        flywheelRight = hardwareMap.get(DcMotorEx.class, "FlywheelRight");
-        flywheelRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flywheelLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        flywheelRight = hardwareMap.get(DcMotorEx.class, "FlywheelRight");
 
-        flywheelLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flywheelRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        flywheelLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        flywheelRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         flywheelLeft.setDirection(DcMotor.Direction.REVERSE);
-        flywheelRight.setDirection(DcMotor.Direction.FORWARD);
+//        flywheelRight.setDirection(DcMotor.Direction.FORWARD);
+
+        VelocityPIDController flywheelLeftPidController = new VelocityPIDController(Kp, Ki, Kd, Kf);
+
+        double targetPulsePerMinute = targetRPM * pulsePerRevolution;
+        double targetPulsePerSecond = targetPulsePerMinute / 60;
+
+        ElapsedTime runtime = new ElapsedTime();
+
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-         while (opModeIsActive()) {
-             // Put run blocks here.
-            double power = PIDControl(targetRPM * pulsePerRevolution, flywheelRight.getVelocity());
-            flywheelRight.setPower(power);
+        runtime.reset();
+
+        while (opModeIsActive()) {
+            // Get measured velocity from motor (FTC SDK method)
+            double measuredTicksPerSec = flywheelLeft.getVelocity();
+
+            long now = System.nanoTime();
+            double power = flywheelLeftPidController.update(measuredTicksPerSec, targetPulsePerSecond, now);
+            flywheelLeft.setPower(power);
 
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("power", power);
-            packet.put("velocity", flywheelRight.getVelocity());
-            packet.put("RPMs", flywheelRight.getVelocity() / 28);
+            packet.put("Desired Ticks/Sec", targetPulsePerSecond);
+            packet.put("Measured Ticks/Sec", measuredTicksPerSec);
+            packet.put("Power", power);
             FtcDashboard.getInstance().sendTelemetryPacket(packet);
         }
     }
-
-    private double PIDControl(double reference, double state) {
-        double error = reference - state;
-        double dt = timer.seconds();
-        timer.reset();
-        
-        integralsum += error * dt;
-        double derivative = (error - lastError) / dt;
-        lastError = error;
-
-
-        double output = (error * Kp) + (derivative * Kd) + (integralsum * Ki) + (reference * Kf);
-        return output;
-    }
-
-
 }
