@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.motors;
+package org.firstinspires.ftc.teamcode.robot.motors;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.pid.VelocityPIDController;
+import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
 
 public class FlywheelMotorController {
     private final double Kp = 0.0001;

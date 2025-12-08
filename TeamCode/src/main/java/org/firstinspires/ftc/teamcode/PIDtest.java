@@ -9,39 +9,28 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.motors.FlywheelMotorController;
+import org.firstinspires.ftc.teamcode.robot.RampageRobot;
+import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 
 @TeleOp(name = "PID test")
 public class PIDtest extends LinearOpMode {
     @Override
     public void runOpMode() {
-        FlywheelMotorController flywheelLeft = createFlywheelMotorController("FlywheelLeft", DcMotorSimple.Direction.REVERSE);
-        FlywheelMotorController flywheelRight = createFlywheelMotorController("FlywheelRight", DcMotorSimple.Direction.FORWARD);
-
-        ElapsedTime runtime = new ElapsedTime();
+        RampageRobot robot = new RampageRobot(this);
 
         waitForStart();
 
-        runtime.reset();
-
         while (opModeIsActive()) {
-            flywheelLeft.update();
-            flywheelRight.update();
+            robot.update();
 
             TelemetryPacket packet = new TelemetryPacket();
-            packet.put("Desired Ticks/Sec", flywheelLeft.getTargetPulsePerSecond());
-            packet.put("Measured Ticks/Sec", flywheelLeft.getMeasuredPulsePerSecond());
-            packet.put("Power", flywheelLeft.getPower());
+            packet.put("Left Desired Ticks/Sec", robot.getFlywheelLeft().getTargetPulsePerSecond());
+            packet.put("Left Measured Ticks/Sec", robot.getFlywheelLeft().getMeasuredPulsePerSecond());
+            packet.put("Left Power", robot.getFlywheelLeft().getPower());
+            packet.put("Right Desired Ticks/Sec", robot.getFlywheelRight().getTargetPulsePerSecond());
+            packet.put("Right Measured Ticks/Sec", robot.getFlywheelRight().getMeasuredPulsePerSecond());
+            packet.put("Right Power", robot.getFlywheelRight().getPower());
             FtcDashboard.getInstance().sendTelemetryPacket(packet);
         }
-    }
-
-    private FlywheelMotorController createFlywheelMotorController(String deviceName, DcMotor.Direction direction) {
-        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, deviceName);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setDirection(direction);
-        FlywheelMotorController controller = new FlywheelMotorController(motor);
-        controller.setTargetRpm(1700);
-        return controller;
     }
 }
