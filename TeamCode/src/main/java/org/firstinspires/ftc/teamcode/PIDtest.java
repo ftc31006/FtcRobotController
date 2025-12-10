@@ -31,7 +31,10 @@ public class PIDtest extends LinearOpMode {
 
     private void processInput(RampageRobot robot) {
         if (gamepad1.aWasPressed()) {
-            robot.toggleFeeder();
+            robot.startFlywheels();
+        }
+        if (gamepad1.bWasPressed()){
+            robot.stopFlywheels();
         }
 //        robot.setDriveMotorPower(0.1, 0.1, 0.1, 0.1);
     }

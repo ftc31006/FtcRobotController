@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
 
 public class FlywheelMotorController {
-    private final double Kp = 0.0001;
-    private final double Ki = 0;
+    private final double Kp = 0.00000001;
+    private final double Ki = 0.01;
     private final double Kd = 0;
     private final double maxVelocity = 2600;
-    private final double Kf = 1 / maxVelocity;
+    private final double Kf = .98 / maxVelocity;
 
     private final double pulsePerRevolution = 28;
 
@@ -19,6 +19,7 @@ public class FlywheelMotorController {
 
     private final VelocityPIDController pidController = new VelocityPIDController(Kp, Ki, Kd, Kf);
 
+    private boolean isFlywheelRunning;
 
     public FlywheelMotorController(DcMotorEx motor) {
         this.motor = motor;
@@ -35,6 +36,18 @@ public class FlywheelMotorController {
         this.targetPulsePerSecond = targetPulsePerMinute / 60;
     }
 
+    public void start(){
+        isFlywheelRunning = true;
+    }
+
+    public void stop(){
+        isFlywheelRunning = false;
+    }
+
+    public DcMotorEx getMotor() {
+        return motor;
+    }
+
     public double getTargetPulsePerSecond() {
         return this.targetPulsePerSecond;
     }
@@ -48,6 +61,10 @@ public class FlywheelMotorController {
     }
 
     public void update() {
+        if (!isFlywheelRunning) {
+            this.motor.setPower(0);
+            return;
+        }
         // Get measured velocity from motor (FTC SDK method)
         double measuredTicksPerSec = this.motor.getVelocity();
 

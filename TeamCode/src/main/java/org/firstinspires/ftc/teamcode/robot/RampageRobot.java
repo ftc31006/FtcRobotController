@@ -76,7 +76,14 @@ public class RampageRobot {
         flywheelLeft.update();
         flywheelRight.update();
     }
-
+    public void startFlywheels(){
+        flywheelLeft.start();
+        flywheelRight.start();
+    }
+    public void stopFlywheels(){
+        flywheelLeft.stop();
+        flywheelRight.stop();
+    }
     private DcMotor getDriveMotor(String deviceName, DcMotor.Direction direction) {
         DcMotor motor = opMode.hardwareMap.get(DcMotor.class, deviceName);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
