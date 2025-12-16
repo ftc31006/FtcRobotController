@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
@@ -24,6 +25,9 @@ public class RampageRobot {
     private final Servo feeder;
     private boolean isFeederClosed = false;
 
+    private final DigitalChannel closedLimitSwitch;
+    private final DigitalChannel openLimitSwitch;
+
     public RampageRobot(OpMode opMode) {
         this.opMode = opMode;
         this.frontLeftMotor = getDriveMotor("FrontLeft", DcMotorSimple.Direction.REVERSE);
@@ -33,6 +37,8 @@ public class RampageRobot {
         this.flywheelLeft = createFlywheelMotorController("FlywheelLeft", DcMotorSimple.Direction.REVERSE);
         this.flywheelRight = createFlywheelMotorController("FlywheelRight", DcMotorSimple.Direction.FORWARD);
         this.feeder = opMode.hardwareMap.get(Servo.class, "Feeder");
+        this.closedLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, "ClosedLimitSwitch");
+        this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, "OpenLimitSwitch");
     }
 
     public void setDriveMotorPower(double frontLeft, double frontRight, double backLeft, double backRight) {
@@ -63,6 +69,10 @@ public class RampageRobot {
             closeFeeder();
         }
     }
+
+    public boolean isFeederInOpenPosition() { return openLimitSwitch.getState(); }
+
+    public boolean isFeederInClosedPosition() { return closedLimitSwitch.getState(); }
 
     public FlywheelMotorController getFlywheelLeft() {
         return flywheelLeft;
