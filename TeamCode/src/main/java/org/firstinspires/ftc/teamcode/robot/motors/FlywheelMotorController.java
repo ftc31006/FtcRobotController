@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.motors;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
 
@@ -26,11 +28,28 @@ public class FlywheelMotorController {
         this.setTargetRpm(0);
     }
 
+    public void init(DcMotor.Direction direction)
+    {
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setDirection(direction);
+    }
+
+    public void setPIDFCoefficients(double p, double i, double d, double f)
+    {
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(p, i, d, f);
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+    }
+
     public double getTargetRpm() {
         return targetRpm;
     }
 
     public void setTargetRpm(double targetRpm) {
+        if (targetRpm == 0) {
+            motor.setPower(0);
+        }
+
         this.targetRpm = targetRpm;
         double targetPulsePerMinute = targetRpm * pulsePerRevolution;
         this.targetPulsePerSecond = targetPulsePerMinute / 60;

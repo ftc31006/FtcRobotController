@@ -103,9 +103,8 @@ public class RampageRobot {
 
     private FlywheelMotorController createFlywheelMotorController(String deviceName, DcMotor.Direction direction) {
         DcMotorEx motor = opMode.hardwareMap.get(DcMotorEx.class, deviceName);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setDirection(direction);
         FlywheelMotorController controller = new FlywheelMotorController(motor);
+        controller.init(direction);
         controller.setTargetRpm(1700);
         return controller;
     }
