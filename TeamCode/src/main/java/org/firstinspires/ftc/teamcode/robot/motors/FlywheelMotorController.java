@@ -4,9 +4,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.robot.Context;
+import org.firstinspires.ftc.teamcode.robot.RampageRobot;
+import org.firstinspires.ftc.teamcode.robot.Sequence;
 import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
 
-public class FlywheelMotorController {
+public class FlywheelMotorController implements Sequence {
     private final double Kp = 0.00000001;
     private final double Ki = 0.01;
     private final double Kd = 0;
@@ -79,7 +82,17 @@ public class FlywheelMotorController {
         return this.motor.getPower();
     }
 
-    public void update() {
+    public void initialize(Context context) {
+        context.registerSequence(this);
+    }
+
+    @Override
+    public boolean hasCompleted() {
+        return false;
+    }
+
+    @Override
+    public void executeFrame(Context context) {
         if (!isFlywheelRunning) {
             this.motor.setPower(0);
             return;
