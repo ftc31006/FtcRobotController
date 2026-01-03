@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Auto Red")
+@Autonomous(name = "Red")
 public class RedAuto extends AutoBase {
     @Override
     protected double getFrontLeftPower() {

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Auto Blue")
+@Autonomous(name = "Blue")
 public class BlueAuto extends AutoBase {
     @Override
     protected double getFrontLeftPower() {

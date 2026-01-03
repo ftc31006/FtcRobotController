@@ -42,6 +42,10 @@ public class RampageRobot implements Sequence {
         backRightMotor.setPower(backRight);
     }
 
+    public DriveMotorPower getDriveMotorPower() {
+        return new DriveMotorPower(frontLeftMotor.getPower(), frontRightMotor.getPower(), backLeftMotor.getPower(), backRightMotor.getPower());
+    }
+
     public FeederState getFeederState() {
         if (isFeederClosed) {
             return closedLimitSwitch.getState() ? FeederState.CLOSED : FeederState.CLOSING;
