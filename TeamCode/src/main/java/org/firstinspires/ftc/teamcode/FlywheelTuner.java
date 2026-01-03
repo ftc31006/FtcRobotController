@@ -1,46 +1,49 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
+import org.firstinspires.ftc.teamcode.robot.Constants;
 
 @TeleOp(name = "Flywheel Tuner")
-public class FlywheelTuner extends LinearOpMode {
-    private final double[] AVAILABLE_VELOCITIES = { 900, 1500 };
-    private int currentTargetVelocityIndex = 1;
+public class FlywheelTuner extends OpMode {
+    private DcMotorEx flywheelMotor;
+    private final double highVelocity = 1500;
+    private final double lowVelocity = 900;
+    private double curTargetVelocity = highVelocity;
+
     private double F = 0;
     private double P = 0;
 
-    private final double[] stepSizes = { 10.0, 1.0, 0.1, 0.001, 0.0001 };
+    private final double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
     private int stepIndex = 1;
 
-    private boolean isTuningLeftFlywheel = true;
-
     @Override
-    public void runOpMode() {
-        RampageRobot robot = new RampageRobot(this);
+    public void init() {
+        flywheelMotor = hardwareMap.get(DcMotorEx.class, Constants.Motors.LeftFlywheelMotor);
+        flywheelMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheelMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        waitForStart();
-
-        while (opModeIsActive()) {
-            processInput(robot);
-        }
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+        flywheelMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        telemetry.addLine("Init complete");
     }
 
-    private void processInput(RampageRobot robot) {
-        if (gamepad1.aWasPressed()) {
-            isTuningLeftFlywheel = !isTuningLeftFlywheel;
-        }
-
+    @Override
+    public void loop() {
         if (gamepad1.yWasPressed()) {
-            currentTargetVelocityIndex = (currentTargetVelocityIndex + 1) % AVAILABLE_VELOCITIES.length;
+            if (curTargetVelocity == highVelocity) {
+                curTargetVelocity = lowVelocity;
+            } else {
+                curTargetVelocity = highVelocity;
+            }
         }
 
-        if (gamepad1.bWasPressed()){
+        if (gamepad1.bWasPressed()) {
             stepIndex = (stepIndex + 1) % stepSizes.length;
         }
 
@@ -55,30 +58,23 @@ public class FlywheelTuner extends LinearOpMode {
             P -= stepSizes[stepIndex];
         }
         if (gamepad1.dpadUpWasPressed()) {
-            F += stepSizes[stepIndex];
+            P += stepSizes[stepIndex];
         }
 
-        double targetVelocity = AVAILABLE_VELOCITIES[currentTargetVelocityIndex];
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
+        flywheelMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
-        FlywheelMotorController targetMotor = isTuningLeftFlywheel ? robot.getFlywheelLeft() : robot.getFlywheelRight();
-        FlywheelMotorController otherMotor = isTuningLeftFlywheel ? robot.getFlywheelRight() : robot.getFlywheelLeft();
-        otherMotor.setTargetRpm(0);
+        flywheelMotor.setVelocity(curTargetVelocity);
 
-        targetMotor.setPIDFCoefficients(P, 0, 0, F);
-        targetMotor.setTargetRpm(targetVelocity);
+        double curVelocity = flywheelMotor.getVelocity();
+        double error = curTargetVelocity - curVelocity;
 
-        double currentVelocity = robot.getFlywheelLeft().getMeasuredPulsePerSecond();
-        double currentError = targetVelocity - currentVelocity;
-
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.put("Motor", isTuningLeftFlywheel ? "Left" : "Right");
-        packet.put("Target Velocity", targetVelocity);
-        packet.put("Current Velocity", currentVelocity);
-        packet.put("Error", currentError);
-        packet.addLine("-------------------------");
-        packet.put("Tuning P", P);
-        packet.put("Tuning F", F);
-        packet.put("Step Size", stepSizes[stepIndex]);
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        telemetry.addData("Target Velocity", curTargetVelocity);
+        telemetry.addData("Current Velocity", curVelocity);
+        telemetry.addData("Error", "%.2f", error);
+        telemetry.addLine("-----------------------------");
+        telemetry.addData("Tuning P", "%.4f (D-Pad U/D)", P);
+        telemetry.addData("Tuning F", "%.4f (D-Pad L/R)", F);
+        telemetry.addData("Step Size", "%.4f (B Button)", stepSizes[stepIndex]);
     }
 }

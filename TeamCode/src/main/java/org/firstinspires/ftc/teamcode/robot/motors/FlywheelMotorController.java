@@ -93,15 +93,15 @@ public class FlywheelMotorController implements Sequence {
 
     @Override
     public void executeFrame(Context context) {
-        if (!isFlywheelRunning) {
-            this.motor.setPower(0);
-            return;
-        }
-        // Get measured velocity from motor (FTC SDK method)
-        double measuredTicksPerSec = this.motor.getVelocity();
-
-        long now = System.nanoTime();
-        double power = this.pidController.update(measuredTicksPerSec, targetPulsePerSecond, now);
-        this.motor.setPower(power);
+//        if (!isFlywheelRunning) {
+//            this.motor.setPower(0);
+//            return;
+//        }
+//        // Get measured velocity from motor (FTC SDK method)
+//        double measuredTicksPerSec = this.motor.getVelocity();
+//
+//        long now = System.nanoTime();
+//        double power = this.pidController.update(measuredTicksPerSec, targetPulsePerSecond, now);
+//        this.motor.setPower(power);
     }
 }

@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
+import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
@@ -29,17 +28,17 @@ public class TeleOp extends RampageOpMode {
     }
 
     @Override
-    protected void writeTelemetry(Context context, TelemetryPacket packet) {
+    protected void writeTelemetry(Context context, TelemetryWriter writer) {
         RampageRobot robot = context.getRobot();
 
-        packet.put("Feeder State", robot.getFeederState());
-        packet.put("Sequence Count", context.getSequenceCount());
+        writer.write("Feeder State", robot.getFeederState());
+        writer.write("Sequence Count", context.getSequenceCount());
 
         DriveMotorPower driveMotorPower = robot.getDriveMotorPower();
-        packet.put("Front Left Wheel Power", driveMotorPower.frontLeft);
-        packet.put("Front Right Wheel Power", driveMotorPower.frontRight);
-        packet.put("Back Left Wheel Power", driveMotorPower.backLeft);
-        packet.put("Back Right Wheel Power", driveMotorPower.backRight);
+        writer.write("Front Left Wheel Power", driveMotorPower.frontLeft);
+        writer.write("Front Right Wheel Power", driveMotorPower.frontRight);
+        writer.write("Back Left Wheel Power", driveMotorPower.backLeft);
+        writer.write("Back Right Wheel Power", driveMotorPower.backRight);
     }
 
     private void updateDriveMotorPower(Context context) {

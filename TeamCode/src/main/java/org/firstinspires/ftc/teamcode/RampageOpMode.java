@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.Sequence;
+import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
+import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriterImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +49,17 @@ public abstract class RampageOpMode extends LinearOpMode {
                 sequence.executeFrame(context);
             }
 
-            TelemetryPacket packet = new TelemetryPacket();
-            writeTelemetry(context, packet);
-            FtcDashboard.getInstance().sendTelemetryPacket(packet);
+            processTelemetry(context);
         }
     }
 
     protected abstract void processInput(Context context);
 
-    protected void writeTelemetry(Context context, TelemetryPacket packet) { }
+    protected void writeTelemetry(Context context, TelemetryWriter writer) { }
+
+    private void processTelemetry(Context context) {
+        TelemetryWriterImpl writer = new TelemetryWriterImpl(this);
+        writeTelemetry(context, writer);
+        writer.update();
+    }
 }
