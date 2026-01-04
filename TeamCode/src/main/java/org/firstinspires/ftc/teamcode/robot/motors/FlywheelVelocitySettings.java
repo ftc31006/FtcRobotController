@@ -10,11 +10,7 @@ public class FlywheelVelocitySettings {
     public final PIDFCoefficients rightFlywheel;
 
     public static final FlywheelVelocitySettings Stopped = new FlywheelVelocitySettings(0, new PIDFCoefficients(0, 0, 0, 0), new PIDFCoefficients(0, 0, 0, 0));
-
-    public static final FlywheelVelocitySettings[] Velocities = {
-        Stopped,
-        new FlywheelVelocitySettings(1500, new PIDFCoefficients(0, 0, 0, 0), new PIDFCoefficients(0, 0, 0, 0))
-    };
+    public static final FlywheelVelocitySettings Default = new FlywheelVelocitySettings(1500, new PIDFCoefficients(200, 0, 0, 12.55), new PIDFCoefficients(200, 0, 0, 12.55));
 
     FlywheelVelocitySettings(double targetVelocity, PIDFCoefficients leftFlywheel, PIDFCoefficients rightFlywheel) {
         this.targetVelocity = targetVelocity;

@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
+import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
@@ -12,6 +13,8 @@ public class TeleOp extends RampageOpMode {
 
     @Override
     protected void processInput(Context context) {
+        RampageRobot robot = context.getRobot();
+
         updateDriveMotorPower(context);
 
         if (gamepad1.yWasPressed()) {
@@ -24,6 +27,13 @@ public class TeleOp extends RampageOpMode {
 
         if (gamepad1.bWasPressed()) {
             initiateShootSequence(context, 3);
+        }
+
+        if (gamepad1.dpadUpWasPressed()) {
+            robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+        }
+        if (gamepad1.dpadDownWasPressed()) {
+            robot.setFlywheelVelocity(FlywheelVelocitySettings.Stopped);
         }
     }
 
