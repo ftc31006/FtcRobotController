@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
+import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 
 public class RampageRobot implements Sequence {
     private final DcMotor frontLeftMotor;
@@ -29,7 +30,7 @@ public class RampageRobot implements Sequence {
         this.backRightMotor = getDriveMotor(opMode, Constants.Motors.BackRightWheelMotor, DcMotorSimple.Direction.FORWARD);
         this.flywheelLeft = createFlywheelMotorController(opMode, Constants.Motors.LeftFlywheelMotor, DcMotorSimple.Direction.REVERSE);
         this.flywheelRight = createFlywheelMotorController(opMode, Constants.Motors.RightFlywheelMotor, DcMotorSimple.Direction.FORWARD);
-        this.feeder = getFeederMotor(opMode, Constants.Motors.FeederMotor);
+        this.feeder = getFeederMotor(opMode);
 
         this.closedLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.ClosedLimitSwitch);
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
@@ -61,27 +62,13 @@ public class RampageRobot implements Sequence {
         isFeederClosed = false;
     }
 
-    public void toggleFeeder() {
-        if (isFeederClosed) {
-            openFeeder();
-        } else {
-            closeFeeder();
-        }
-    }
-
-    public FlywheelMotorController getFlywheelLeft() {
-        return flywheelLeft;
-    }
-
-    public FlywheelMotorController getFlywheelRight() {
-        return flywheelRight;
+    public void setFlywheelVelocity(FlywheelVelocitySettings velocity) {
+        flywheelLeft.setTargetVelocity(velocity.targetVelocity, velocity.leftFlywheel);
+        flywheelRight.setTargetVelocity(velocity.targetVelocity, velocity.rightFlywheel);
     }
 
     public void initialize(Context context) {
         context.registerSequence(this);
-
-        flywheelLeft.initialize(context);
-        flywheelRight.initialize(context);
     }
 
     @Override
@@ -104,15 +91,6 @@ public class RampageRobot implements Sequence {
         }
     }
 
-    public void startFlywheels(){
-        flywheelLeft.start();
-        flywheelRight.start();
-    }
-    public void stopFlywheels(){
-        flywheelLeft.stop();
-        flywheelRight.stop();
-    }
-
     private DcMotor getDriveMotor(OpMode opMode, String deviceName, DcMotor.Direction direction) {
         DcMotor motor = opMode.hardwareMap.get(DcMotor.class, deviceName);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -120,8 +98,8 @@ public class RampageRobot implements Sequence {
         return motor;
     }
 
-    private DcMotor getFeederMotor(OpMode opMode, String deviceName) {
-        DcMotor motor = opMode.hardwareMap.get(DcMotor.class, deviceName);
+    private DcMotor getFeederMotor(OpMode opMode) {
+        DcMotor motor = opMode.hardwareMap.get(DcMotor.class, Constants.Motors.FeederMotor);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         return motor;
@@ -131,7 +109,6 @@ public class RampageRobot implements Sequence {
         DcMotorEx motor = opMode.hardwareMap.get(DcMotorEx.class, deviceName);
         FlywheelMotorController controller = new FlywheelMotorController(motor);
         controller.init(direction);
-        controller.setTargetRpm(1700);
         return controller;
     }
 }
