@@ -6,8 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.robot.camera.AprilTagWebcam;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class RampageRobot implements Sequence {
     private final DcMotor frontLeftMotor;
@@ -23,6 +26,8 @@ public class RampageRobot implements Sequence {
     private final DigitalChannel closedLimitSwitch;
     private final DigitalChannel openLimitSwitch;
 
+    private final AprilTagWebcam webcam;
+
     public RampageRobot(OpMode opMode) {
         this.frontLeftMotor = getDriveMotor(opMode, Constants.Motors.FrontLeftWheelMotor, DcMotorSimple.Direction.REVERSE);
         this.frontRightMotor = getDriveMotor(opMode, Constants.Motors.FrontRightWheelMotor, DcMotorSimple.Direction.FORWARD);
@@ -34,6 +39,8 @@ public class RampageRobot implements Sequence {
 
         this.closedLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.ClosedLimitSwitch);
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
+
+        this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
 
     public void setDriveMotorPower(double frontLeft, double frontRight, double backLeft, double backRight) {
@@ -69,6 +76,14 @@ public class RampageRobot implements Sequence {
 
     public void initialize(Context context) {
         context.registerSequence(this);
+    }
+
+    public AprilTagDetection findAprilTag(int id) {
+        return webcam.getTagById(id);
+    }
+
+    public void initializeFrame() {
+        webcam.update();
     }
 
     @Override

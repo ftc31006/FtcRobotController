@@ -15,17 +15,21 @@ public class Constants {
     }
 
     public static class Motors {
-        public static final String FrontLeftWheelMotor = "FrontLeft";
-        public static final String FrontRightWheelMotor = "FrontRight";
-        public static final String BackLeftWheelMotor = "BackLeft";
-        public static final String BackRightWheelMotor = "BackRight";
-        public static final String LeftFlywheelMotor = "FlywheelLeft";
-        public static final String RightFlywheelMotor = "FlywheelRight";
-        public static final String FeederMotor = "Feeder";
+        public static final String FrontLeftWheelMotor = "FrontLeft"; // Control Hub Port 1
+        public static final String FrontRightWheelMotor = "FrontRight"; // Control Hub Port 2
+        public static final String BackLeftWheelMotor = "BackLeft"; // Control Hub Port 3
+        public static final String BackRightWheelMotor = "BackRight"; // Control Hub Port 0
+        public static final String LeftFlywheelMotor = "FlywheelLeft"; // Expansion Hub Port 1
+        public static final String RightFlywheelMotor = "FlywheelRight"; // Expansion Hub Port 0
+        public static final String FeederMotor = "Feeder"; // Expansion Hub Port 2
     }
 
     public static class Sensors {
-        public static final String ClosedLimitSwitch = "ClosedLimitSwitch";
-        public static final String OpenLimitSwitch = "OpenLimitSwitch";
+        public static final String ClosedLimitSwitch = "ClosedLimitSwitch"; // Expansion Hub Digital Port 1/2
+        public static final String OpenLimitSwitch = "OpenLimitSwitch"; // Control Hub Digital Port 1/2
+    }
+
+    public static class Cameras {
+        public static final String Webcam = "Webcam 1";
     }
 }

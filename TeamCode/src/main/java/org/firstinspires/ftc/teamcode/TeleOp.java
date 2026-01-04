@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
@@ -49,6 +50,19 @@ public class TeleOp extends RampageOpMode {
         writer.write("Front Right Wheel Power", driveMotorPower.frontRight);
         writer.write("Back Left Wheel Power", driveMotorPower.backLeft);
         writer.write("Back Right Wheel Power", driveMotorPower.backRight);
+
+        AprilTagDetection detection = robot.findAprilTag(20);
+        if (detection != null) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (cm)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (cm, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }
     }
 
     private void updateDriveMotorPower(Context context) {

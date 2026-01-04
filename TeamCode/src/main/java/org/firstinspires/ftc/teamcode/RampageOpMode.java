@@ -41,6 +41,8 @@ public abstract class RampageOpMode extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            context.getRobot().initializeFrame();
+
             processInput(context);
 
             sequences.removeIf(Sequence::hasCompleted);
