@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 
-public class ShootSequence implements Sequence {
+public class ShootSequence implements FeederSequence {
     private int count;
     private boolean requiresInitialization = true;
     private boolean isCancelled = false;

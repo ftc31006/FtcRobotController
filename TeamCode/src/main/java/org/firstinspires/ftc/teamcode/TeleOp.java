@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
+import org.firstinspires.ftc.teamcode.robot.FeederSequence;
+import org.firstinspires.ftc.teamcode.robot.GlobalState;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
@@ -10,7 +12,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
-    private ShootSequence shootSequence = null;
+    private FeederSequence feederSequence = null;
 
     @Override
     protected void processInput(Context context) {
@@ -18,8 +20,12 @@ public class TeleOp extends RampageOpMode {
 
         updateDriveMotorPower(context);
 
+        if (gamepad1.xWasPressed()) {
+            GlobalState.FeederHomePosition = null;
+        }
+
         if (gamepad1.yWasPressed()) {
-            cancelShootSequence();
+            cancelFeederSequence();
         }
 
         if (gamepad1.aWasPressed()) {
@@ -43,6 +49,8 @@ public class TeleOp extends RampageOpMode {
         RampageRobot robot = context.getRobot();
 
         writer.write("Feeder State", robot.getFeederState());
+        writer.write("Feeder Home Position", GlobalState.FeederHomePosition);
+        writer.write("Feeder Current Position", robot.getFeederPosition());
         writer.write("Sequence Count", context.getSequenceCount());
 
         DriveMotorPower driveMotorPower = robot.getDriveMotorPower();
@@ -72,17 +80,17 @@ public class TeleOp extends RampageOpMode {
     }
 
     private void initiateShootSequence(Context context, int count) {
-        cancelShootSequence();
-        shootSequence = new ShootSequence(count);
-        context.registerSequence(shootSequence);
+        cancelFeederSequence();
+        feederSequence = new ShootSequence(count);
+        context.registerSequence(feederSequence);
     }
 
-    private void cancelShootSequence() {
-        if (shootSequence == null) {
+    private void cancelFeederSequence() {
+        if (feederSequence == null) {
             return;
         }
 
-        shootSequence.cancel();
-        shootSequence = null;
+        feederSequence.cancel();
+        feederSequence = null;
     }
 }

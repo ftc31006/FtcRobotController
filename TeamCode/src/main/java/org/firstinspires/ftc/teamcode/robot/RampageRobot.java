@@ -20,10 +20,10 @@ public class RampageRobot implements Sequence {
     private final FlywheelMotorController flywheelLeft;
     private final FlywheelMotorController flywheelRight;
 
-    private final DcMotor feeder;
+    private final DcMotor feederMotor;
     private boolean isFeederClosed = false;
 
-    private final DigitalChannel closedLimitSwitch;
+//    private final DigitalChannel closedLimitSwitch;
     private final DigitalChannel openLimitSwitch;
 
     private final AprilTagWebcam webcam;
@@ -35,9 +35,9 @@ public class RampageRobot implements Sequence {
         this.backRightMotor = getDriveMotor(opMode, Constants.Motors.BackRightWheelMotor, DcMotorSimple.Direction.FORWARD);
         this.flywheelLeft = createFlywheelMotorController(opMode, Constants.Motors.LeftFlywheelMotor, DcMotorSimple.Direction.REVERSE);
         this.flywheelRight = createFlywheelMotorController(opMode, Constants.Motors.RightFlywheelMotor, DcMotorSimple.Direction.FORWARD);
-        this.feeder = getFeederMotor(opMode);
+        this.feederMotor = getFeederMotor(opMode);
 
-        this.closedLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.ClosedLimitSwitch);
+//        this.closedLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.ClosedLimitSwitch);
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
@@ -55,18 +55,45 @@ public class RampageRobot implements Sequence {
     }
 
     public FeederState getFeederState() {
-        if (isFeederClosed) {
-            return closedLimitSwitch.getState() ? FeederState.CLOSED : FeederState.CLOSING;
+        if (GlobalState.FeederHomePosition == null) {
+            return FeederState.INITIALIZING;
         }
-        return openLimitSwitch.getState() ? FeederState.OPEN : FeederState.OPENING;
+        if (isFeederClosed) {
+            return feederMotor.isBusy() ? FeederState.CLOSING : FeederState.CLOSED;
+        }
+        return feederMotor.isBusy() ? FeederState.OPENING : FeederState.OPEN;
+    }
+
+    public int getFeederPosition() {
+        return feederMotor.getCurrentPosition();
     }
 
     public void closeFeeder() {
+        if (getFeederState() == FeederState.INITIALIZING) {
+            return;
+        }
         isFeederClosed = true;
+        feederMotor.setTargetPosition(getTargetFeederClosedPosition());
+        feederMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        feederMotor.setPower(Constants.Power.Feeder);
     }
 
     public void openFeeder() {
+        if (getFeederState() == FeederState.INITIALIZING) {
+            return;
+        }
         isFeederClosed = false;
+        feederMotor.setTargetPosition(GlobalState.FeederHomePosition);
+        feederMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        feederMotor.setPower(-Constants.Power.Feeder);
+    }
+
+    public void toggleFeeder() {
+        if (isFeederClosed) {
+            openFeeder();
+        } else {
+            closeFeeder();
+        }
     }
 
     public void setFlywheelVelocity(FlywheelVelocitySettings velocity) {
@@ -93,17 +120,24 @@ public class RampageRobot implements Sequence {
 
     @Override
     public void executeFrame(Context context) {
+        if (getFeederState() == FeederState.INITIALIZING && openLimitSwitch.getState()) {
+            GlobalState.FeederHomePosition = feederMotor.getCurrentPosition();
+            feederMotor.setTargetPosition(GlobalState.FeederHomePosition);
+        }
+
         switch (getFeederState()) {
-            case CLOSING:
-                feeder.setPower(Constants.Power.Feeder);
+            case INITIALIZING:
+                feederMotor.setPower(-Constants.Power.FeederCalibration);
                 break;
-            case OPENING:
-                feeder.setPower(-Constants.Power.Feeder);
-                break;
-            default:
-                feeder.setPower(0);
+            case OPEN:
+            case CLOSED:
+                feederMotor.setPower(0);
                 break;
         }
+    }
+
+    private int getTargetFeederClosedPosition() {
+        return GlobalState.FeederHomePosition + Constants.Feeder.ClosedPositionOffset;
     }
 
     private DcMotor getDriveMotor(OpMode opMode, String deviceName, DcMotor.Direction direction) {
@@ -115,6 +149,7 @@ public class RampageRobot implements Sequence {
 
     private DcMotor getFeederMotor(OpMode opMode) {
         DcMotor motor = opMode.hardwareMap.get(DcMotor.class, Constants.Motors.FeederMotor);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         return motor;

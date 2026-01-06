@@ -10,8 +10,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 
 public class Constants {
+    public static class Feeder {
+        public static final int ClosedPositionOffset = 700;
+    }
+
     public static class Power {
-        public static final double Feeder = 0.3;
+        public static final double Feeder = 1;
+        public static final double FeederCalibration = 0.2;
     }
 
     public static class Motors {
