@@ -20,10 +20,6 @@ public class TeleOp extends RampageOpMode {
 
         updateDriveMotorPower(context);
 
-        if (gamepad1.xWasPressed()) {
-            GlobalState.FeederHomePosition = null;
-        }
-
         if (gamepad1.yWasPressed()) {
             cancelFeederSequence();
         }
