@@ -15,7 +15,7 @@ public class Constants {
     }
 
     public static class Power {
-        public static final double Feeder = 1;
+        public static final double Feeder = .85;
         public static final double FeederCalibration = 0.2;
     }
 

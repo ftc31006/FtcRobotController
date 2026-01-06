@@ -29,6 +29,7 @@ public class TeleOp extends RampageOpMode {
         }
 
         if (gamepad1.aWasPressed()) {
+//            robot.toggleFeeder();
             initiateShootSequence(context, 1);
         }
 
