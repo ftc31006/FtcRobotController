@@ -32,8 +32,8 @@ public class RampageRobot implements Sequence {
         this.frontRightMotor = getDriveMotor(opMode, Constants.Motors.FrontRightWheelMotor, DcMotorSimple.Direction.FORWARD);
         this.backLeftMotor = getDriveMotor(opMode, Constants.Motors.BackLeftWheelMotor, DcMotorSimple.Direction.REVERSE);
         this.backRightMotor = getDriveMotor(opMode, Constants.Motors.BackRightWheelMotor, DcMotorSimple.Direction.FORWARD);
-        this.flywheelLeft = createFlywheelMotorController(opMode, Constants.Motors.LeftFlywheelMotor, DcMotorSimple.Direction.REVERSE);
-        this.flywheelRight = createFlywheelMotorController(opMode, Constants.Motors.RightFlywheelMotor, DcMotorSimple.Direction.FORWARD);
+        this.flywheelLeft = createFlywheelMotorController(opMode, Constants.Motors.LeftFlywheelMotor, DcMotorSimple.Direction.FORWARD);
+        this.flywheelRight = createFlywheelMotorController(opMode, Constants.Motors.RightFlywheelMotor, DcMotorSimple.Direction.REVERSE);
         this.feederMotor = getFeederMotor(opMode);
 
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);

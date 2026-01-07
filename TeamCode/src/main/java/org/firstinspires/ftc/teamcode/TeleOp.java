@@ -18,27 +18,23 @@ public class TeleOp extends RampageOpMode {
     protected void processInput(Context context) {
         RampageRobot robot = context.getRobot();
 
+        robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+
         updateDriveMotorPower(context);
 
-        if (gamepad1.yWasPressed()) {
+        if (gamepad2.yWasPressed() || gamepad1.yWasPressed()) {
             cancelFeederSequence();
         }
 
-        if (gamepad1.aWasPressed()) {
-//            robot.toggleFeeder();
+        if (gamepad2.aWasPressed()) {
             initiateShootSequence(context, 1);
         }
 
-        if (gamepad1.bWasPressed()) {
+        if (gamepad2.bWasPressed()) {
             initiateShootSequence(context, 3);
         }
 
-        if (gamepad1.dpadUpWasPressed()) {
-            robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
-        }
-        if (gamepad1.dpadDownWasPressed()) {
-            robot.setFlywheelVelocity(FlywheelVelocitySettings.Stopped);
-        }
+
     }
 
     @Override
@@ -73,7 +69,23 @@ public class TeleOp extends RampageOpMode {
     private void updateDriveMotorPower(Context context) {
         RampageRobot robot = context.getRobot();
 
-        robot.setDriveMotorPower(-gamepad1.left_stick_y, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.left_stick_x);
+        double forwardBack = -gamepad1.left_stick_y;
+
+        double strafe = gamepad1.left_stick_x;
+
+        double turn = gamepad1.right_stick_x;
+
+        double slowmo = gamepad1.right_bumper ? .35 : 1;
+
+        double frontLeft = (forwardBack + strafe + turn) * slowmo;
+
+        double frontRight = (forwardBack - strafe - turn) * slowmo;
+
+        double backLeft = (forwardBack - strafe + turn) * slowmo;
+
+        double backRight = (forwardBack + strafe - turn) * slowmo;
+
+        robot.setDriveMotorPower(frontLeft, frontRight, backLeft, backRight);
     }
 
     private void initiateShootSequence(Context context, int count) {

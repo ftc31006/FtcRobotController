@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.robot.Sequence;
 import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
 
 public class FlywheelMotorController {
-    private final double pulsePerRevolution = 28;
     private final DcMotorEx motor;
 
     public FlywheelMotorController(DcMotorEx motor) {
@@ -23,10 +22,9 @@ public class FlywheelMotorController {
         motor.setDirection(direction);
     }
 
-    public void setTargetVelocity(double rpm, PIDFCoefficients pidfCoefficients) {
+    public void setTargetVelocity(double velocity, PIDFCoefficients pidfCoefficients) {
         motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
-        double pulsePerMinute = rpm * pulsePerRevolution;
-        motor.setVelocity(pulsePerMinute);
+        motor.setVelocity(velocity);
     }
 }
