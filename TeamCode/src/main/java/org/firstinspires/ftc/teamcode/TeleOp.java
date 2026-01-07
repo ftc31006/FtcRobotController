@@ -33,8 +33,6 @@ public class TeleOp extends RampageOpMode {
         if (gamepad2.bWasPressed()) {
             initiateShootSequence(context, 3);
         }
-
-
     }
 
     @Override

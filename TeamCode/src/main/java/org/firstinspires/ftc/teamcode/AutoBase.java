@@ -5,61 +5,59 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.robot.Context;
+import org.firstinspires.ftc.teamcode.robot.RampageRobot;
+import org.firstinspires.ftc.teamcode.robot.Sequence;
+import org.firstinspires.ftc.teamcode.robot.ShootSequence;
+import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public abstract class AutoBase extends LinearOpMode {
-    private static final double FEEDER_CLOSED_POSITION = 0.25;
-    private static final double FEEDER_OPEN_POSITION = 0.82;
-
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
-    private DcMotor flywheelLeft;
-    private DcMotor flywheelRight;
-
-    private Servo feeder = null;
-    private boolean isFeederOpen = true;
-
     @Override
     public void runOpMode() {
-        frontLeft = hardwareMap.get(DcMotor.class, "FrontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "FrontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "BackLeft");
-        backRight = hardwareMap.get(DcMotor.class, "BackRight");
-        flywheelLeft = hardwareMap.get(DcMotor.class, "FlywheelLeft");
-        flywheelRight = hardwareMap.get(DcMotor.class, "FlywheelRight");
-        feeder = hardwareMap.get(Servo.class, "Feeder");
+        RampageRobot robot = new RampageRobot(this);
+        List<Sequence> sequences = new ArrayList<>();
+        Context context = new Context() {
+            @Override
+            public RampageRobot getRobot() {
+                return robot;
+            }
 
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        // shoot motors
-        flywheelLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flywheelRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        flywheelLeft.setDirection(DcMotor.Direction.REVERSE);
-        flywheelRight.setDirection(DcMotor.Direction.FORWARD);
+            @Override
+            public void registerSequence(Sequence sequence) {
+                sequences.add(sequence);
+            }
+
+            @Override
+            public int getSequenceCount() {
+                return sequences.size();
+            }
+        };
+
+        robot.initialize(context);
+
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-        if (opModeIsActive()) {
-            feeder.setPosition(FEEDER_OPEN_POSITION);
-            // Put run blocks here.
-            flywheelLeft.setPower(0.34);
-            flywheelRight.setPower(0.34);
-            sleep(1000);
-            drive(-0.5,-0.5,-0.5, -0.5, 450 );
-            sleep(1000);
-            shoot();
-            shoot();
-            shoot();
-            drive(getFrontLeftPower(),getFrontRightPower(),getBackLeftPower(),getBackRightPower(),1250);
-            telemetry.update();
+        robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+
+        sleep(1000);
+        drive(robot, -0.5,-0.5,-0.5, -0.5, 450);
+        sleep(1000);
+
+        ShootSequence feederSequence = new ShootSequence(3);
+        context.registerSequence(feederSequence);
+
+        while (opModeIsActive() && !feederSequence.hasCompleted()) {
+            for (Sequence sequence: sequences) {
+                sequence.executeFrame(context);
+            }
         }
+
+        drive(robot, getFrontLeftPower(), getFrontRightPower(), getBackLeftPower(), getBackRightPower(),1250);
+        telemetry.update();
     }
 
     protected abstract double getFrontLeftPower();
@@ -68,23 +66,14 @@ public abstract class AutoBase extends LinearOpMode {
     protected abstract double getBackRightPower();
 
 
-    private void drive(double frontLeftPower,double frontRightPower,double backLeftPower,double backRighePower,long duration) {
-        frontLeft.setPower(frontLeftPower);
-        frontRight.setPower(frontRightPower);
-        backLeft.setPower(backLeftPower);
-        backRight.setPower(backRighePower);
+    private void drive(RampageRobot robot, double frontLeftPower,double frontRightPower,double backLeftPower,double backRightPower,long duration) {
+        robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
         sleep(duration);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
-        frontRight.setPower(0);
+        robot.setDriveMotorPower(0, 0, 0, 0);
     }
-    private void shoot() {
-        feeder.setPosition(FEEDER_CLOSED_POSITION);
-        sleep(2000);
-        feeder.setPosition(FEEDER_OPEN_POSITION);
-        sleep(2000);
-        telemetry.addData("FeederPosition", feeder.getPosition());
+
+    private void writeTelemetry(String message) {
+        telemetry.addLine(message);
         telemetry.update();
     }
 }
