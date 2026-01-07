@@ -4,4 +4,5 @@ public interface Context {
     RampageRobot getRobot();
     void registerSequence(Sequence sequence);
     int getSequenceCount();
+    void executeFrame();
 }

@@ -1,45 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.Sequence;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-public abstract class AutoBase extends LinearOpMode {
+public abstract class AutoBase extends RampageOpMode {
     @Override
-    public void runOpMode() {
-        RampageRobot robot = new RampageRobot(this);
-        List<Sequence> sequences = new ArrayList<>();
-        Context context = new Context() {
-            @Override
-            public RampageRobot getRobot() {
-                return robot;
-            }
-
-            @Override
-            public void registerSequence(Sequence sequence) {
-                sequences.add(sequence);
-            }
-
-            @Override
-            public int getSequenceCount() {
-                return sequences.size();
-            }
-        };
-
-        robot.initialize(context);
-
-        waitForStart();
+    protected void executeOpMode(Context context) {
+        RampageRobot robot = context.getRobot();
 
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
 
@@ -51,9 +21,7 @@ public abstract class AutoBase extends LinearOpMode {
         context.registerSequence(feederSequence);
 
         while (opModeIsActive() && !feederSequence.hasCompleted()) {
-            for (Sequence sequence: sequences) {
-                sequence.executeFrame(context);
-            }
+            context.executeFrame();
         }
 
         drive(robot, getFrontLeftPower(), getFrontRightPower(), getBackLeftPower(), getBackRightPower(),1250);
@@ -70,10 +38,5 @@ public abstract class AutoBase extends LinearOpMode {
         robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
         sleep(duration);
         robot.setDriveMotorPower(0, 0, 0, 0);
-    }
-
-    private void writeTelemetry(String message) {
-        telemetry.addLine(message);
-        telemetry.update();
     }
 }

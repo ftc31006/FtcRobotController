@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Context;
@@ -35,27 +33,40 @@ public abstract class RampageOpMode extends LinearOpMode {
             public int getSequenceCount() {
                 return sequences.size();
             }
+
+            @Override
+            public void executeFrame() {
+                sequences.removeIf(Sequence::hasCompleted);
+
+                for (Sequence sequence: sequences) {
+                    sequence.executeFrame(this);
+                }
+            }
         };
         robot.initialize(context);
 
         waitForStart();
+
+        executeOpMode(context);
+    }
+
+    protected void executeOpMode(Context context) {
+        onStart(context);
 
         while (opModeIsActive()) {
             context.getRobot().initializeFrame();
 
             processInput(context);
 
-            sequences.removeIf(Sequence::hasCompleted);
-
-            for (Sequence sequence: sequences) {
-                sequence.executeFrame(context);
-            }
+            context.executeFrame();
 
             processTelemetry(context);
         }
     }
 
-    protected abstract void processInput(Context context);
+    protected void onStart(Context context) { }
+
+    protected void processInput(Context context) { }
 
     protected void writeTelemetry(Context context, TelemetryWriter writer) { }
 

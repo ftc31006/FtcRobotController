@@ -15,10 +15,15 @@ public class TeleOp extends RampageOpMode {
     private FeederSequence feederSequence = null;
 
     @Override
-    protected void processInput(Context context) {
+    protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
 
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+    }
+
+    @Override
+    protected void processInput(Context context) {
+        RampageRobot robot = context.getRobot();
 
         updateDriveMotorPower(context);
 
