@@ -13,12 +13,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
     private FeederSequence feederSequence = null;
+    private String distance;
 
     @Override
     protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
 
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+        distance = "Near";
     }
 
     @Override
@@ -26,6 +28,16 @@ public class TeleOp extends RampageOpMode {
         RampageRobot robot = context.getRobot();
 
         updateDriveMotorPower(context);
+
+        if (gamepad2.leftBumperWasPressed() ){
+           robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+            distance = "Near";
+        }
+
+        if (gamepad2.rightBumperWasPressed()) {
+            robot.setFlywheelVelocity(FlywheelVelocitySettings.Far);
+            distance = "Far";
+        }
 
         if (gamepad2.yWasPressed() || gamepad1.yWasPressed()) {
             cancelFeederSequence();
@@ -54,6 +66,8 @@ public class TeleOp extends RampageOpMode {
         writer.write("Front Right Wheel Power", driveMotorPower.frontRight);
         writer.write("Back Left Wheel Power", driveMotorPower.backLeft);
         writer.write("Back Right Wheel Power", driveMotorPower.backRight);
+
+        writer.write("Distance", distance);
 
         AprilTagDetection detection = robot.findAprilTag(20);
         if (detection != null) {

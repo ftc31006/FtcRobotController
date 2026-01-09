@@ -11,10 +11,10 @@ public abstract class AutoBase extends RampageOpMode {
     protected void executeOpMode(Context context) {
         RampageRobot robot = context.getRobot();
 
-        robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+        robot.setFlywheelVelocity(FlywheelVelocitySettings.Auto);
 
         sleep(1000);
-        drive(robot, -0.5,-0.5,-0.5, -0.5, 450);
+        drive(robot, -0.5,-0.5,-0.5, -0.5, 325);
         sleep(1000);
 
         ShootSequence feederSequence = new ShootSequence(3);

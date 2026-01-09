@@ -20,14 +20,14 @@ import java.util.List;
 public class FlywheelTuner extends RampageOpMode {
     private DcMotorEx leftFlywheelMotor;
     private DcMotorEx rightFlywheelMotor;
-    private final double highVelocity = 700;
-    private final double lowVelocity = 400;
+    private final double highVelocity = 860;
+    private final double lowVelocity = 300;
     private double curTargetVelocity = highVelocity;
 
     private double F = 0;
     private double P = 0;
 
-    private final double[] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
+    private final double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
     private int stepIndex = 1;
 
     @Override
