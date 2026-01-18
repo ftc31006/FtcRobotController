@@ -103,6 +103,9 @@ public class AprilTagTest extends RampageOpMode {
 
             if (Math.abs(angle) < 3) {
                 aprilTagState = LEDState.GREEN;
+                if (gamepad1.x) {
+                    frequency = 100;
+                }
             } else if (gamepad1.x) {
                 turn = angle < 0 ? -turnSpeed : turnSpeed;
                 frequency = 100;
