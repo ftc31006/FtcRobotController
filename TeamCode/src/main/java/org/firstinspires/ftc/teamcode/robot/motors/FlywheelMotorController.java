@@ -4,11 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.robot.Context;
-import org.firstinspires.ftc.teamcode.robot.RampageRobot;
-import org.firstinspires.ftc.teamcode.robot.Sequence;
-import org.firstinspires.ftc.teamcode.robot.pid.VelocityPIDController;
-
 public class FlywheelMotorController {
     private final DcMotorEx motor;
 
