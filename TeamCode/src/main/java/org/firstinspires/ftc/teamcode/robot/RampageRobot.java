@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.LED;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.robot.camera.AprilTagWebcam;
@@ -24,6 +25,8 @@ public class RampageRobot implements Sequence {
     private boolean isFeederClosed = false;
 
     private final DigitalChannel openLimitSwitch;
+    private final LED aprilTagGreenLed;
+    private final LED aprilTagRedLed;
 
     private final AprilTagWebcam webcam;
 
@@ -37,6 +40,8 @@ public class RampageRobot implements Sequence {
         this.feederMotor = getFeederMotor(opMode);
 
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
+        this.aprilTagGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagGreen);
+        this.aprilTagRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRed);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
@@ -89,6 +94,41 @@ public class RampageRobot implements Sequence {
 
     public AprilTagDetection findAprilTag(int id) {
         return webcam.getTagById(id);
+    }
+
+    public LEDState getAprilTagLEDState() {
+        if (aprilTagGreenLed.isLightOn()) {
+            if (aprilTagRedLed.isLightOn()) {
+                return LEDState.YELLOW;
+            } else {
+                return LEDState.GREEN;
+            }
+        }
+        if (aprilTagRedLed.isLightOn()) {
+            return LEDState.RED;
+        }
+        return LEDState.OFF;
+    }
+
+    public void setAprilTagLEDState(LEDState state) {
+        switch (state) {
+            case GREEN:
+                aprilTagGreenLed.on();
+                aprilTagRedLed.off();
+                break;
+            case RED:
+                aprilTagGreenLed.off();
+                aprilTagRedLed.on();
+                break;
+            case YELLOW:
+                aprilTagGreenLed.on();
+                aprilTagRedLed.on();
+                break;
+            default:
+                aprilTagGreenLed.off();
+                aprilTagRedLed.off();
+                break;
+        }
     }
 
     public void initializeFrame() {

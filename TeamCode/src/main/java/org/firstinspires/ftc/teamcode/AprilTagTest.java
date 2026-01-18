@@ -4,6 +4,8 @@ import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
 import org.firstinspires.ftc.teamcode.pid.AprilTagAimingController;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
+import org.firstinspires.ftc.teamcode.robot.LEDSequence;
+import org.firstinspires.ftc.teamcode.robot.LEDState;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -12,12 +14,20 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 public class AprilTagTest extends RampageOpMode {
     private final TargetLocator targetLocator = new TargetLocator(22);
     private final AprilTagAimingController aimingController = new AprilTagAimingController(0);
+    private final LEDSequence ledSequence = new LEDSequence();
 
     private double P = 0;
-    private double turnSpeed = .5;
+    private double turnSpeed = .2;
 
     private final double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
     private int stepIndex = 1;
+
+    @Override
+    protected void onStart(Context context) {
+        context.registerSequence(ledSequence);
+        super.onStart(context);
+    }
+
     @Override
     protected void processInput(Context context) {
         RampageRobot robot = context.getRobot();
@@ -59,6 +69,8 @@ public class AprilTagTest extends RampageOpMode {
         writer.write("Front Right Wheel Power", driveMotorPower.frontRight);
         writer.write("Back Left Wheel Power", driveMotorPower.backLeft);
         writer.write("Back Right Wheel Power", driveMotorPower.backRight);
+        writer.write("");
+        writer.write("April Tag LED State", robot.getAprilTagLEDState());
 
         AprilTagDetection detection = robot.findAprilTag(20);
         if (detection != null) {
@@ -79,16 +91,21 @@ public class AprilTagTest extends RampageOpMode {
         RampageRobot robot = context.getRobot();
 
         double turn = gamepad1.right_stick_x;
+        LEDState aprilTagState = LEDState.OFF;
+        Integer frequency = null;
 
-        if (gamepad1.x) {
-            AprilTagDetection detection = robot.findAprilTag(20);
-
-            if (detection != null && detection.metadata != null) {
-                double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
+        AprilTagDetection detection = robot.findAprilTag(20);
+        if (detection != null && detection.metadata != null) {
+            double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
 //                turn = aimingController.calculate(angle, 0);
-                if (Math.abs(angle) > 3) {
-                    turn = angle < 0 ? -turnSpeed : turnSpeed;
-                }
+
+            aprilTagState = LEDState.RED;
+
+            if (Math.abs(angle) < 3) {
+                aprilTagState = LEDState.GREEN;
+            } else if (gamepad1.x) {
+                turn = angle < 0 ? -turnSpeed : turnSpeed;
+                frequency = 100;
             }
         }
 
@@ -103,5 +120,6 @@ public class AprilTagTest extends RampageOpMode {
         double backRight = -turn * slowmo;
 
         robot.setDriveMotorPower(frontLeft, frontRight, backLeft, backRight);
+        ledSequence.setState(aprilTagState, frequency);
     }
 }

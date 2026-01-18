@@ -34,6 +34,11 @@ public class Constants {
         public static final String OpenLimitSwitch = "OpenLimitSwitch"; // Control Hub Digital Port 1/2
     }
 
+    public static class LEDs {
+        public static final String AprilTagGreen = "AprilTagGreenLED"; // Control Hub Digital Port 3
+        public static final String AprilTagRed = "AprilTagRedLED"; // Control Hub Digital Port 2
+    }
+
     public static class Cameras {
         public static final String Webcam = "Webcam 1";
     }
