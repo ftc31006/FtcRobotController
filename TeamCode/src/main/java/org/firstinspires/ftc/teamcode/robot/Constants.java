@@ -35,8 +35,10 @@ public class Constants {
     }
 
     public static class LEDs {
-        public static final String AprilTagGreen = "AprilTagGreenLED"; // Control Hub Digital Port 3
-        public static final String AprilTagRed = "AprilTagRedLED"; // Control Hub Digital Port 2
+        public static final String AprilTagRightGreen = "AprilTagRightGreenLED"; // Control Hub Digital Port 3
+        public static final String AprilTagLeftGreen = "AprilTagLeftGreenLED"; // Expansion Hub Digital Port 3
+        public static final String AprilTagRightRed = "AprilTagRightRedLED"; // Control Hub Digital Port 2
+        public static final String AprilTagLeftRed = "AprilTagLeftRedLED"; // Expansion Hub Digital Port 2
     }
 
     public static class Cameras {

@@ -13,6 +13,9 @@ import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RampageRobot implements Sequence {
     private final DcMotor frontLeftMotor;
     private final DcMotor frontRightMotor;
@@ -25,8 +28,8 @@ public class RampageRobot implements Sequence {
     private boolean isFeederClosed = false;
 
     private final DigitalChannel openLimitSwitch;
-    private final LED aprilTagGreenLed;
-    private final LED aprilTagRedLed;
+    private final Iterable<LED> aprilTagGreenLeds;
+    private final Iterable<LED> aprilTagRedLeds;
 
     private final AprilTagWebcam webcam;
 
@@ -40,8 +43,14 @@ public class RampageRobot implements Sequence {
         this.feederMotor = getFeederMotor(opMode);
 
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
-        this.aprilTagGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagGreen);
-        this.aprilTagRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRed);
+        this.aprilTagGreenLeds = List.of(
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightGreen),
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftGreen)
+        );
+        this.aprilTagRedLeds = List.of(
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightRed),
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftRed)
+        );
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
@@ -97,14 +106,16 @@ public class RampageRobot implements Sequence {
     }
 
     public LEDState getAprilTagLEDState() {
-        if (aprilTagGreenLed.isLightOn()) {
-            if (aprilTagRedLed.isLightOn()) {
+        LED greenLed = aprilTagGreenLeds.iterator().next();
+        LED redLed = aprilTagRedLeds.iterator().next();
+        if (greenLed.isLightOn()) {
+            if (redLed.isLightOn()) {
                 return LEDState.YELLOW;
             } else {
                 return LEDState.GREEN;
             }
         }
-        if (aprilTagRedLed.isLightOn()) {
+        if (redLed.isLightOn()) {
             return LEDState.RED;
         }
         return LEDState.OFF;
@@ -113,20 +124,20 @@ public class RampageRobot implements Sequence {
     public void setAprilTagLEDState(LEDState state) {
         switch (state) {
             case GREEN:
-                aprilTagGreenLed.on();
-                aprilTagRedLed.off();
+                aprilTagGreenLeds.forEach(LED::on);
+                aprilTagRedLeds.forEach(LED::off);
                 break;
             case RED:
-                aprilTagGreenLed.off();
-                aprilTagRedLed.on();
+                aprilTagGreenLeds.forEach(LED::off);
+                aprilTagRedLeds.forEach(LED::on);
                 break;
             case YELLOW:
-                aprilTagGreenLed.on();
-                aprilTagRedLed.on();
+                aprilTagGreenLeds.forEach(LED::on);
+                aprilTagRedLeds.forEach(LED::on);
                 break;
             default:
-                aprilTagGreenLed.off();
-                aprilTagRedLed.off();
+                aprilTagGreenLeds.forEach(LED::off);
+                aprilTagRedLeds.forEach(LED::off);
                 break;
         }
     }
