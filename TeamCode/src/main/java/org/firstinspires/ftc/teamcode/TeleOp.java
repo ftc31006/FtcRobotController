@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.geometry.TargetLocator;
+import org.firstinspires.ftc.teamcode.pid.AprilTagAimingController;
 import org.firstinspires.ftc.teamcode.robot.Context;
 import org.firstinspires.ftc.teamcode.robot.DriveMotorPower;
 import org.firstinspires.ftc.teamcode.robot.FeederSequence;
 import org.firstinspires.ftc.teamcode.robot.GlobalState;
+import org.firstinspires.ftc.teamcode.robot.LEDSequence;
+import org.firstinspires.ftc.teamcode.robot.LEDState;
 import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.robot.ShootSequence;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
@@ -12,13 +16,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 public class TeleOp extends RampageOpMode {
+    private final TargetLocator targetLocator = new TargetLocator(22);
+    private final LEDSequence ledSequence = new LEDSequence();
     private FeederSequence feederSequence = null;
     private String distance;
+    private final double autoAimTurnSpeed = .2;
 
     @Override
     protected void onStart(Context context) {
         RampageRobot robot = context.getRobot();
 
+        context.registerSequence(ledSequence);
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
         distance = "Near";
     }
@@ -27,7 +35,8 @@ public class TeleOp extends RampageOpMode {
     protected void processInput(Context context) {
         RampageRobot robot = context.getRobot();
 
-        updateDriveMotorPower(context);
+        Double turnOverride = updateAutoAimingDetails(context);
+        updateDriveMotorPower(context, turnOverride);
 
         if (gamepad2.leftBumperWasPressed() ){
            robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
@@ -83,24 +92,54 @@ public class TeleOp extends RampageOpMode {
         }
     }
 
-    private void updateDriveMotorPower(Context context) {
+    private Double updateAutoAimingDetails(Context context) {
         RampageRobot robot = context.getRobot();
 
-        double forwardBack = -gamepad1.left_stick_y;
+        LEDState aprilTagState = LEDState.OFF;
+        Double turn = null;
+        Integer frequency = null;
 
-        double strafe = gamepad1.left_stick_x;
+        AprilTagDetection detection = robot.findAprilTag(20);
+        if (detection != null && detection.metadata != null) {
+            double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
 
-        double turn = gamepad1.right_stick_x;
+            aprilTagState = LEDState.RED;
+
+            if (Math.abs(angle) < 3) {
+                aprilTagState = LEDState.GREEN;
+                if (gamepad1.x) {
+                    frequency = 100;
+                    turn = 0.0;
+                }
+            } else if (gamepad1.x) {
+                turn = angle < 0 ? -autoAimTurnSpeed : autoAimTurnSpeed;
+                frequency = 100;
+            }
+        }
+
+        ledSequence.setState(aprilTagState, frequency);
+
+        return turn;
+    }
+
+    private void updateDriveMotorPower(Context context, Double turnOverride) {
+        RampageRobot robot = context.getRobot();
 
         double slowmo = gamepad1.right_bumper ? .35 : 1;
 
-        double frontLeft = (forwardBack + strafe + turn) * slowmo;
+        double forwardBack = -gamepad1.left_stick_y * slowmo;
 
-        double frontRight = (forwardBack - strafe - turn) * slowmo;
+        double strafe = gamepad1.left_stick_x * slowmo;
 
-        double backLeft = (forwardBack - strafe + turn) * slowmo;
+        double turn = turnOverride == null ? gamepad1.right_stick_x * slowmo : turnOverride;
 
-        double backRight = (forwardBack + strafe - turn) * slowmo;
+        double frontLeft = forwardBack + strafe + turn;
+
+        double frontRight = forwardBack - strafe - turn;
+
+        double backLeft = forwardBack - strafe + turn;
+
+        double backRight = forwardBack + strafe - turn;
 
         robot.setDriveMotorPower(frontLeft, frontRight, backLeft, backRight);
     }
