@@ -28,6 +28,7 @@ public class TeleOp extends RampageOpMode {
 
         context.registerSequence(ledSequence);
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+        robot.setShotDistanceLEDState(LEDState.GREEN);
         distance = "Near";
     }
 
@@ -40,11 +41,13 @@ public class TeleOp extends RampageOpMode {
 
         if (gamepad2.leftBumperWasPressed() ){
            robot.setFlywheelVelocity(FlywheelVelocitySettings.Default);
+           robot.setShotDistanceLEDState(LEDState.GREEN);
             distance = "Near";
         }
 
         if (gamepad2.rightBumperWasPressed()) {
             robot.setFlywheelVelocity(FlywheelVelocitySettings.Far);
+            robot.setShotDistanceLEDState(LEDState.RED);
             distance = "Far";
         }
 

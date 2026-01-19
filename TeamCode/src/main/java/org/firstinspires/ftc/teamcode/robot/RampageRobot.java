@@ -30,6 +30,8 @@ public class RampageRobot implements Sequence {
     private final DigitalChannel openLimitSwitch;
     private final Iterable<LED> aprilTagGreenLeds;
     private final Iterable<LED> aprilTagRedLeds;
+    private final LED shotDistanceGreenLed;
+    private final LED shotDistanceRedLed;
 
     private final AprilTagWebcam webcam;
 
@@ -44,13 +46,14 @@ public class RampageRobot implements Sequence {
 
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
         this.aprilTagGreenLeds = List.of(
-                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightGreen),
                 opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftGreen)
         );
         this.aprilTagRedLeds = List.of(
-                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightRed),
                 opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftRed)
         );
+
+        this.shotDistanceGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightGreen);
+        this.shotDistanceRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightRed);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
@@ -141,7 +144,26 @@ public class RampageRobot implements Sequence {
                 break;
         }
     }
-
+    public void setShotDistanceLEDState(LEDState state) {
+        switch (state) {
+            case GREEN:
+                shotDistanceGreenLed.on();
+                shotDistanceRedLed.off();
+                break;
+            case RED:
+                shotDistanceGreenLed.off();
+                shotDistanceRedLed.on();
+                break;
+            case YELLOW:
+                shotDistanceGreenLed.on();
+                shotDistanceRedLed.on();
+                break;
+            default:
+                shotDistanceGreenLed.off();
+                shotDistanceRedLed.off();
+                break;
+        }
+    }
     public void initializeFrame() {
         webcam.update();
     }
