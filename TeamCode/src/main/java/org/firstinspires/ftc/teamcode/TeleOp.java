@@ -78,7 +78,7 @@ public class TeleOp extends RampageOpMode {
 
         writer.write("Distance", distance);
 
-        AprilTagDetection detection = robot.findAprilTag(20);
+        AprilTagDetection detection = robot.getClosestTagById(20, 24);
         if (detection != null) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
@@ -99,7 +99,7 @@ public class TeleOp extends RampageOpMode {
         Double turn = null;
         Integer frequency = null;
 
-        AprilTagDetection detection = robot.findAprilTag(20);
+        AprilTagDetection detection = robot.getClosestTagById(20, 24);
         if (detection != null && detection.metadata != null) {
             double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
 

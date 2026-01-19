@@ -12,6 +12,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AprilTagWebcam {
@@ -44,18 +45,33 @@ public class AprilTagWebcam {
         return detectedTags;
     }
 
-    public AprilTagDetection getTagById(int id) {
-        for (AprilTagDetection detection : detectedTags) {
-            if (detection.id == id) {
-                return detection;
+    public AprilTagDetection getClosestTagById(int... ids) {
+        Iterable<AprilTagDetection> matches = findTagsByIds(ids);
+        AprilTagDetection bestMatch = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (AprilTagDetection match: matches) {
+            double distance = calculateAprilTagDistance(match);
+            if (distance < closestDistance) {
+                bestMatch = match;
+                closestDistance = distance;
             }
         }
-        return null;
+        return bestMatch;
+    }
+
+    public Iterable<AprilTagDetection> findTagsByIds(int... ids) {
+        return () -> detectedTags.stream().filter(t -> Arrays.stream(ids).anyMatch(id -> id == t.id)).iterator();
     }
 
     public void stop() {
         if (visionPortal != null) {
             visionPortal.close();
         }
+    }
+
+    private double calculateAprilTagDistance(AprilTagDetection detection) {
+        double x = detection.ftcPose.x;
+        double y = detection.ftcPose.y;
+        return Math.sqrt(x * x + y * y);
     }
 }

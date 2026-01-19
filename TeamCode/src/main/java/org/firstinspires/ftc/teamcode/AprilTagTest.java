@@ -72,7 +72,7 @@ public class AprilTagTest extends RampageOpMode {
         writer.write("");
         writer.write("April Tag LED State", robot.getAprilTagLEDState());
 
-        AprilTagDetection detection = robot.findAprilTag(20);
+        AprilTagDetection detection = robot.getClosestTagById(20);
         if (detection != null) {
             if (detection.metadata != null) {
                 writer.write(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
@@ -94,7 +94,7 @@ public class AprilTagTest extends RampageOpMode {
         LEDState aprilTagState = LEDState.OFF;
         Integer frequency = null;
 
-        AprilTagDetection detection = robot.findAprilTag(20);
+        AprilTagDetection detection = robot.getClosestTagById(20);
         if (detection != null && detection.metadata != null) {
             double angle = targetLocator.getAngle(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.yaw);
 //                turn = aimingController.calculate(angle, 0);

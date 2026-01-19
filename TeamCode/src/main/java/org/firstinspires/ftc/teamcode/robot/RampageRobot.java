@@ -101,8 +101,8 @@ public class RampageRobot implements Sequence {
         context.registerSequence(this);
     }
 
-    public AprilTagDetection findAprilTag(int id) {
-        return webcam.getTagById(id);
+    public AprilTagDetection getClosestTagById(int... ids) {
+        return webcam.getClosestTagById(ids);
     }
 
     public LEDState getAprilTagLEDState() {
