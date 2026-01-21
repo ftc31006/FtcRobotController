@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
 import org.firstinspires.ftc.teamcode.robot.motors.FlywheelVelocitySettings;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RampageRobot implements Sequence {
@@ -46,14 +45,14 @@ public class RampageRobot implements Sequence {
 
         this.openLimitSwitch = opMode.hardwareMap.get(DigitalChannel.class, Constants.Sensors.OpenLimitSwitch);
         this.aprilTagGreenLeds = List.of(
-                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftGreen)
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.BackLeftGreen)
         );
         this.aprilTagRedLeds = List.of(
-                opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagLeftRed)
+                opMode.hardwareMap.get(LED.class, Constants.LEDs.BackLeftRed)
         );
 
-        this.shotDistanceGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightGreen);
-        this.shotDistanceRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.AprilTagRightRed);
+        this.shotDistanceGreenLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.BackRightGreen);
+        this.shotDistanceRedLed = opMode.hardwareMap.get(LED.class, Constants.LEDs.BackRightRed);
 
         this.webcam = new AprilTagWebcam(opMode.hardwareMap.get(WebcamName.class, Constants.Cameras.Webcam));
     }
@@ -203,6 +202,7 @@ public class RampageRobot implements Sequence {
         DcMotor motor = opMode.hardwareMap.get(DcMotor.class, deviceName);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setDirection(direction);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         return motor;
     }
 

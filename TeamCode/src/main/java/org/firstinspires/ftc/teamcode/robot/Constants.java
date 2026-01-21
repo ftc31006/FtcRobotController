@@ -1,14 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.robot.motors.FlywheelMotorController;
-
 public class Constants {
     public static class Feeder {
         public static final int ClosedPositionOffset = 700;
@@ -35,10 +26,10 @@ public class Constants {
     }
 
     public static class LEDs {
-        public static final String AprilTagRightGreen = "AprilTagRightGreenLED"; // Control Hub Digital Port 3
-        public static final String AprilTagLeftGreen = "AprilTagLeftGreenLED"; // Expansion Hub Digital Port 3
-        public static final String AprilTagRightRed = "AprilTagRightRedLED"; // Control Hub Digital Port 2
-        public static final String AprilTagLeftRed = "AprilTagLeftRedLED"; // Expansion Hub Digital Port 2
+        public static final String BackRightGreen = "BackRightGreenLED"; // Control Hub Digital Port 3
+        public static final String BackLeftGreen = "BackLeftGreenLED"; // Expansion Hub Digital Port 3
+        public static final String BackRightRed = "BackRightRedLED"; // Control Hub Digital Port 2
+        public static final String BackLeftRed = "BackLeftRedLED"; // Expansion Hub Digital Port 2
     }
 
     public static class Cameras {
