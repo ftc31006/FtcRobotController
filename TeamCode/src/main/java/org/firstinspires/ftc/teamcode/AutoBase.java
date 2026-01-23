@@ -14,7 +14,7 @@ public abstract class AutoBase extends RampageOpMode {
         robot.setFlywheelVelocity(FlywheelVelocitySettings.Auto);
 
         sleep(1000);
-        drive(robot, -0.5,-0.5,-0.5, -0.5, 325);
+        drive(robot, -0.5,-0.5,-0.5, -0.5, 550);
         sleep(1000);
 
         ShootSequence feederSequence = new ShootSequence(3);
@@ -24,7 +24,7 @@ public abstract class AutoBase extends RampageOpMode {
             context.executeFrame();
         }
 
-        drive(robot, getFrontLeftPower(), getFrontRightPower(), getBackLeftPower(), getBackRightPower(),1250);
+        drive(robot, getFrontLeftPower(), getFrontRightPower(), getBackLeftPower(), getBackRightPower(),1500);
         telemetry.update();
     }
 
