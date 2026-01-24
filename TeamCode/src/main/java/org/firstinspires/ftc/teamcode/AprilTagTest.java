@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.robot.RampageRobot;
 import org.firstinspires.ftc.teamcode.telemetry.TelemetryWriter;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "April Tag")
+//@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "April Tag")
 public class AprilTagTest extends RampageOpMode {
     private final TargetLocator targetLocator = new TargetLocator(22);
     private final AprilTagAimingController aimingController = new AprilTagAimingController(0);

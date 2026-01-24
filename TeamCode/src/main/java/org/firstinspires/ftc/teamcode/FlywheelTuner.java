@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.ShootSequence;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name = "Flywheel Tuner")
+//@TeleOp(name = "Flywheel Tuner")
 public class FlywheelTuner extends RampageOpMode {
     private DcMotorEx leftFlywheelMotor;
     private DcMotorEx rightFlywheelMotor;

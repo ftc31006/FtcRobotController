@@ -17,6 +17,10 @@ public abstract class AutoBase extends RampageOpMode {
         drive(robot, -0.5,-0.5,-0.5, -0.5, 550);
         sleep(1000);
 
+        if (!shouldShoot()){
+            return;
+        }
+
         ShootSequence feederSequence = new ShootSequence(3);
         context.registerSequence(feederSequence);
 
@@ -32,7 +36,7 @@ public abstract class AutoBase extends RampageOpMode {
     protected abstract double getFrontRightPower();
     protected abstract double getBackLeftPower();
     protected abstract double getBackRightPower();
-
+    protected boolean shouldShoot(){return true;}
 
     private void drive(RampageRobot robot, double frontLeftPower,double frontRightPower,double backLeftPower,double backRightPower,long duration) {
         robot.setDriveMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
